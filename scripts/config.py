@@ -16,6 +16,14 @@ INCLUDE_FORKS   = True  # Show forked repositories too, each labelled with the r
 # =============================================================================
 # BADGES
 # =============================================================================
+# Languages that always get a badge, on top of the ones GitHub detected in the repositories.
+# The `Tech Stack` is otherwise only what is on this account: anything studied, used at work
+# or written in a repository that is not public would never show up. Names already detected
+# are matched case-insensitively and not repeated
+EXTRA_STACK = (
+    "C", "C++", "Go", "Java", "Python", "Assembly RISC-V",
+    "SQL", "JavaScript", "Rust",
+)
 SATURATION = (0.85, 1.00)  # Near-full, so every hue reads as a colour and not a grey
 LIGHTNESS  = (0.34, 0.50)  # Kept wide so same-hue languages still differ in depth
 

@@ -252,6 +252,11 @@ def build_stack(projects: list[Project]) -> str:
     """
     A badge per language, the ones used across most projects first.
 
+    Everything in `EXTRA_STACK` is appended to what the repositories revealed, since a
+    language only ever studied, used at work, or written in a private repository would
+    otherwise be missing from a section meant to say what the account can work in.
+    Those count as zero projects, so they sort after the languages GitHub can vouch for.
+
     Args:
         projects: the project dicts returned by gather().
 
@@ -260,6 +265,14 @@ def build_stack(projects: list[Project]) -> str:
     """
 
     counts = Counter(language for project in projects for language in project["stack"])
+
+    # GitHub's own spelling wins when both name the same language, so the declared list
+    # cannot produce a second, differently-cased badge for something already detected
+    seen = {language.lower() for language in counts}
+    for language in config.EXTRA_STACK:
+        if language.lower() not in seen:
+            counts[language] = 0
+            seen.add(language.lower())
 
     # Ties break alphabetically so the order can never wobble between runs
     order = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0].lower()))
