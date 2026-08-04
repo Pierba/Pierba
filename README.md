@@ -13,14 +13,25 @@ BSc in Computer Science @ Sapienza University of Rome
 # 💻 Tech Stack
 <!-- STACK:START -->
 
-*Filled in automatically on the first run of [update-readme.yml](.github/workflows/update-readme.yml).*
+![Python](https://img.shields.io/badge/Python-DA0BF1?style=for-the-badge)
+![Assembly RISC-V](https://img.shields.io/badge/Assembly%20RISC--V-230BEB?style=for-the-badge)
+![C](https://img.shields.io/badge/C-0B9E06?style=for-the-badge)
+![C++](https://img.shields.io/badge/C%2B%2B-199D0D?style=for-the-badge)
+![Go](https://img.shields.io/badge/Go-CF1161?style=for-the-badge)
+![Java](https://img.shields.io/badge/Java-6611D4?style=for-the-badge)
+![JavaScript](https://img.shields.io/badge/JavaScript-AB7F02?style=for-the-badge)
+![Rust](https://img.shields.io/badge/Rust-0A9E4A?style=for-the-badge)
+![SQL](https://img.shields.io/badge/SQL-D14C04?style=for-the-badge)
 
 <!-- STACK:END -->
 
 # 🚀 Projects developed
 <!-- PROJECTS:START -->
 
-*Filled in automatically on the first run of [update-readme.yml](.github/workflows/update-readme.yml).*
+| Project | What it is | Stack |
+| :--- | :--- | :--- |
+| **[bnet_simulator](https://github.com/Pierba/bnet_simulator)** | A discrete-event simulator for testing and comparing beacon-scheduling and multihop strategies in a simulated buoy network | `Python` |
+| **[Finger-Slicer](https://github.com/Pierba/Finger-Slicer)** | Interactive game based on Computer Vision technology | `Python` |
 
 <!-- PROJECTS:END -->
 
