@@ -10,6 +10,7 @@ USERNAME = "Pierba"
 MAX_DESCRIPTION = 220   # Max length of the description
 MAX_STACK       = 6     # Max number of languages per project
 MIN_SHARE       = 0.05  # Ignore languages below this % of the repository
+INCLUDE_FORKS   = True  # Show forked repositories too, each labelled with the repository it came from
 
 
 # =============================================================================

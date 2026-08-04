@@ -38,9 +38,9 @@ README: str = os.path.join(os.path.dirname(__file__), "..", "README.md")
 # Repos that should never appear in the table (the profile repo itself, ...)
 SKIP: set[str] = {USER.lower()}
 
-# One row of the table: the three strings gather() collects per repository, plus its list of languages
+# One row of the table: the strings gather() collects per repository, plus its list of languages
 # A plain assignment, so no typing import is needed: built-in generics land in Python 3.9 and the | union in 3.10
-Project = dict[str, str | list[str]]
+Project = dict[str, str | list[str] | None]
 
 
 # =============================================================================
@@ -80,8 +80,12 @@ def api(path: str) -> dict | list | None:
 def repos() -> list[dict]:
     """
     Get the list of repositories owned by the user.
-    Forks, archived, private and repositories in `SKIP` are left out.
+    Archived, private and repositories in `SKIP` are left out.
     Most recently pushed first.
+
+    Forks are kept, unless `INCLUDE_FORKS` says otherwise: they are part of what the
+    account has worked on. They are labelled rather than hidden, since a fork shown as
+    an own project would misrepresent whose code it is.
 
     Returns:
         A list of repository dicts exactly as the GitHub API returns them,
@@ -97,10 +101,37 @@ def repos() -> list[dict]:
         page += 1
 
     keep = [ repo for repo in repos
-            if not repo["fork"] and not repo["archived"] and not repo["private"]
+            if not repo["archived"] and not repo["private"]
             and repo["name"].lower() not in SKIP
+            and (config.INCLUDE_FORKS or not repo["fork"])
     ]
     return sorted(keep, key=lambda repo: repo["pushed_at"], reverse=True)
+
+
+def inherited_description(repo: str) -> str:
+    """
+    The `About` field of the repository a fork was taken from.
+
+    Forking does not copy the `About` field, so a fork lands here with an empty
+    description and would leave a blank cell in the table. The upstream one describes the
+    same code, which is what the column is for.
+
+    It costs one extra call per fork, since the list endpoint says *whether* a repository
+    is a fork but never what it forks — cheap, given an account has a handful of them at
+    most. Setting an `About` on the fork itself takes precedence over this, and is the way
+    to say something the upstream description does not.
+
+    Args:
+        repo: repository name (without the owner prefix).
+
+    Returns:
+        The parent's description, or an empty string when there is no parent left to ask
+        — a fork whose upstream was deleted still has `fork: true` but no `parent` — or
+        when the parent has no description either.
+    """
+
+    parent = (api(f"/repos/{USER}/{repo}") or {}).get("parent")
+    return (parent.get("description") or "") if parent else ""
 
 
 # =============================================================================
@@ -287,7 +318,7 @@ def gather() -> list[Project]:
 
     Prints one line per repository as it goes, naming an empty `About` field or
     an empty `Language` list so a blank cell on the profile is traceable to the
-    run that produced it.
+    run that produced it, and saying when a description was borrowed from an upstream.
 
     Returns:
         A list of project dicts, each with the keys: title, description, url and stack.
@@ -298,15 +329,20 @@ def gather() -> list[Project]:
         description = repo["description"] or ""
         stack = repo_languages(repo["name"])
 
+        borrowed = not description and repo["fork"]
+        if borrowed:
+            description = inherited_description(repo["name"])
+
         projects.append({
             "title":       repo["name"],
             "description": description,
             "url":         repo["html_url"],
-            "stack":       stack
+            "stack":       stack,
         })
 
         missing = [ what for what, value in (("About", description), ("Languages", stack)) if not value ]
         note = f"  (empty {' and '.join(missing)})" if missing else ""
+        note += "  (description taken from the upstream)" if borrowed and description else ""
         print(f"  added   {repo['name']}{note}")
     return projects
 
